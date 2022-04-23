@@ -1,23 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { createRef } from "react"
+
+class HelloComponet extends React.Component{
+  refOne = createRef()
+  state = {
+    value: 'test',
+    value2: '',
+  }
+  onChange = (e) => {
+    this.setState({
+      value: e.currentTarget.value
+    })
+  }
+  onGetValue = () => {
+    this.setState({
+      value2: this.refOne.current.value
+    })
+  }
+  render() {
+    return (
+      <div>
+        {this.state.value}
+        <input type="text" value={this.state.value} onChange={this.onChange}/>
+        <br />
+        {this.state.value2}
+        <input type="text" ref={this.refOne}/>
+        <button onClick={this.onGetValue}>获取数据</button>
+      </div>
+    )
+  }
+}
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <HelloComponet></HelloComponet>
     </div>
   );
 }
