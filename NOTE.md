@@ -159,7 +159,7 @@ class HelloComponet extends React.Component {
 
 # 组件状态 `state` （状态不可变）
 
-> 提示：在 `react hook` 出来之前，函数式组件是没有自己的状态的，所以需要通过类组件来使用组件状态。有状态组件 VS 无状态组件
+> 提示：在 `react hook` 出来之前，`函数式组件是没有自己的状态的`，所以需要通过类组件来使用组件状态。有状态组件 VS 无状态组件
 
 ```js
 class HelloComponet extends React.Component {
@@ -465,8 +465,85 @@ class App extends React.Component {
 export default App;
 ```
 
-# props 数据类型校验
+# props 数据类型校验 `prop-types`
+
+> 官方文档： https://reactjs.org/docs/typechecking-with-proptypes.html#gatsby-focus-wrapper
 
 ```js
+import React from "react";
+// 安装并引入第三方库prop-types
+import PropTypes from "prop-types";
 
+function ComA({ list }) {
+  return (
+    <div>
+      <div>
+        {list.map((item) => (
+          <div key={item}>{item}</div>
+        ))}
+      </div>
+    </div>
+  );
+}
+// 组件配置props校验规则
+ComA.propTypes = {
+  list: PropTypes.array,
+};
+
+class App extends React.Component {
+  state = {
+    list: [1, 2, 3],
+  };
+  render() {
+    return (
+      <div className="App">
+        <ComA list={this.state.list}></ComA>
+      </div>
+    );
+  }
+}
+
+export default App;
 ```
+
+# 组件 props 默认值
+
+- 函数组件 props 默认值
+
+```js
+// 方法1 函数参数写法（推荐写法）
+function ComA({ pageSize = 10 }) {
+  return <div>{pageSize}</div>;
+}
+
+// 方法2 组件.defaultProps
+ComA.defaultProps = {
+  pageSize: 10,
+};
+```
+
+- 类组件 props 默认值
+
+```js
+class ComA extends React.Component {
+  // 方法1：static静态属性（推荐写法）
+  static defaultProps = {
+    pageSize: 20,
+  };
+  render() {
+    return <div>{this.props.pageSize}</div>;
+  }
+}
+// 方法2: 组件.defaultProps
+// ComA.defaultProps = {
+//   pageSize: 10
+// }
+```
+
+# 生命周期（只有 class 类组件才有生命周期）
+
+> 注意：不能在 `render`、`componentWillUpdate` 执行 `setState`
+
+- 挂载时：constructor(只执行一次)、render(每次渲染都会触发)、componentDidMount(可副作用操作)
+- 更新时：render(每次渲染都会触发)、componentDidUpdate(可副作用操作)
+- 卸载时：componentWillUnmount(可副作用操作)
