@@ -159,7 +159,7 @@ class HelloComponet extends React.Component {
 
 # 组件状态 `state` （状态不可变）
 
-> 提示：在 `react hook` 出来之前，函数式组件是没有字的状态的，所以需要通过类组件来使用组件状态。有状态组件 VS 无状态组件
+> 提示：在 `react hook` 出来之前，函数式组件是没有自己的状态的，所以需要通过类组件来使用组件状态。有状态组件 VS 无状态组件
 
 ```js
 class HelloComponet extends React.Component {
@@ -245,3 +245,228 @@ export default App;
 ```
 
 # 组件通信
+
+## 父子组件通信
+
+- 函数式
+
+```js
+function SonFun(props) {
+  return <div>函数式子组件-{props.msg}</div>;
+}
+```
+
+- 组件式
+
+```js
+class SonClass extends React.Component {
+  render() {
+    return <div>类子组件-{this.props.msg}</div>;
+  }
+}
+
+<div className="App">
+  <SonFun msg={this.state.message}></SonFun>
+  <SonClass msg={this.state.message}></SonClass>
+</div>;
+```
+
+- 传递函数、JSX
+
+```js
+function SonFun(props) {
+  const { msg, child, getFun } = props;
+  return (
+    <div>
+      <div>函数式子组件-{msg}</div>
+      <div>{child}</div>
+      <button onClick={getFun}>按钮</button>
+    </div>
+  );
+}
+
+class App extends React.Component {
+  state = {
+    message: "this is parents state data",
+    child: <p>this is JSX</p>,
+  };
+  getFun = () => {
+    console.log("父组件方法被触发");
+  };
+  render() {
+    return (
+      <div className="App">
+        <SonFun
+          msg={this.state.message}
+          child={this.state.child}
+          getFun={this.getFun}
+        ></SonFun>
+      </div>
+    );
+  }
+}
+```
+
+- 通信
+
+```js
+function SonFun(props) {
+  const { getFun } = props;
+  function onChangeData() {
+    const msg = "这是子组件数据";
+    getFun(msg);
+  }
+  return (
+    <div>
+      <button onClick={onChangeData}>按钮</button>
+    </div>
+  );
+}
+
+class App extends React.Component {
+  getFun = (msg) => {
+    console.log(msg);
+  };
+  render() {
+    return (
+      <div className="App">
+        <SonFun getFun={this.getFun}></SonFun>
+      </div>
+    );
+  }
+}
+```
+
+## 兄弟组件通信
+
+- `eventBus`
+- 通过共同的父组件
+
+```js
+import React from "react";
+
+function SonA(props) {
+  return <div>this is SonA, {props.msg}</div>;
+}
+
+function SonB(props) {
+  return (
+    <div>
+      this is SonB,
+      <button onClick={() => props.changeData("子组B的数据")}>
+        子组件B修改数据
+      </button>
+    </div>
+  );
+}
+
+class App extends React.Component {
+  state = {
+    msg: "初始数据",
+  };
+  changeData = (msg) => {
+    console.log(msg);
+    this.setState({
+      msg,
+    });
+  };
+  render() {
+    return (
+      <div className="App">
+        <SonA msg={this.state.msg}></SonA>
+        <SonB changeData={this.changeData}></SonB>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+
+## 跨组件通信 `Context`
+
+```js
+import React, { createContext } from "react";
+
+// 1. 引入createContext
+const { Provider, Consumer } = createContext();
+
+function ComA() {
+  return (
+    <div>
+      <div>this is ComA</div>
+      <ComC></ComC>
+    </div>
+  );
+}
+
+function ComC() {
+  return (
+    <div>
+      <div>this is ComB</div>
+      {/* 3. 在Consumer中使用数据，value字段名称是固定写法 */}
+      <Consumer>{(value) => <span>{value}</span>}</Consumer>
+    </div>
+  );
+}
+
+class App extends React.Component {
+  state = {
+    message: "this is app",
+  };
+  render() {
+    return (
+      // 2. Provider包裹祖先组件的JSX模板，value字段名称是固定写法
+      <Provider value={this.state.message}>
+        <div className="App">
+          <ComA></ComA>
+        </div>
+      </Provider>
+    );
+  }
+}
+
+export default App;
+```
+
+- mobx
+- redux
+- 基于 hook 的方案
+
+# 特殊的 children 属性
+
+```js
+import React from "react";
+
+function ComA({ children }) {
+  return (
+    <div>
+      <div>{children}</div>
+    </div>
+  );
+}
+
+class App extends React.Component {
+  state = {
+    message: "this is app",
+  };
+  render() {
+    return (
+      <div className="App">
+        <ComA>
+          <div>this is slot</div>
+          <div>this is slot</div>
+        </ComA>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+
+# props 数据类型校验
+
+```js
+
+```

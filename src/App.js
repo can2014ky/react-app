@@ -1,41 +1,27 @@
-import React, { createRef } from "react"
+import React from "react"
 
-class HelloComponet extends React.Component{
-  refOne = createRef()
+function ComA({ children }) {
+  return (
+    <div>
+      <div>{children}</div>
+    </div>
+  )
+}
+
+class App extends React.Component {
   state = {
-    value: 'test',
-    value2: '',
-  }
-  onChange = (e) => {
-    this.setState({
-      value: e.currentTarget.value
-    })
-  }
-  onGetValue = () => {
-    this.setState({
-      value2: this.refOne.current.value
-    })
+    message: 'this is app'
   }
   render() {
     return (
-      <div>
-        {this.state.value}
-        <input type="text" value={this.state.value} onChange={this.onChange}/>
-        <br />
-        {this.state.value2}
-        <input type="text" ref={this.refOne}/>
-        <button onClick={this.onGetValue}>获取数据</button>
+      <div className="App">
+        <ComA>
+          <div>this is slot</div>
+          <div>this is slot</div>
+        </ComA>
       </div>
     )
   }
-}
-
-function App() {
-  return (
-    <div className="App">
-      <HelloComponet></HelloComponet>
-    </div>
-  );
 }
 
 export default App;
